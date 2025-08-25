@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>My Todos</h2>
+  <a href="{% url 'todo-create' %}" class="btn btn-primary">+ Add Todo</a>
+</div>
+
+<!-- 🔎 Search & Filters -->
+<form method="get" class="row g-2 mb-3">
+  <!-- Search -->
+  <div class="col-md-4">
+    <input 
+      type="text" 
+      name="q" 
+      class="form-control"
+      placeholder="Search todos..."
+      value="{{ request.GET.q|default:'' }}">
+  </div>
+
+  <!-- Status Filter -->
+  <div class="col-md-3">
+    <select name="status" class="form-select">
+      <option value="">All Status</option>
+      <option value="completed" {% if request.GET.status == "completed" %}selected{% endif %}>Completed</option>
+      <option value="pending" {% if request.GET.status == "pending" %}selected{% endif %}>Pending</option>
+    </select>
+  </div>
+
+  <!-- Date Filter -->
+  <div class="col-md-3">
+    <select name="date" class="form-select">
+      <option value="">Anytime</option>
+      <option value="7days" {% if request.GET.date == "7days" %}selected{% endif %}>Last 7 Days</option>
+      <option value="30days" {% if request.GET.date == "30days" %}selected{% endif %}>Last 30 Days</option>
+      <option value="90days" {% if request.GET.date == "90days" %}selected{% endif %}>Last 90 Days</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-dark w-100">Apply</button>
+  </div>
+</form>
+
+<!-- Render todo table -->
+<table class="table table-striped table-bordered">
+  <thead class="table-dark">
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Status</th>
+      <th>Created At</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for todo in todos %}
+    <tr>
+      <td><a href="{% url 'todo-detail' todo.pk %}">{{ todo.title }}</a></td>
+      <td>{{ todo.description|default:"—" }}</td>
+      <td>
+        {% if todo.is_completed %}
+          <span class="badge bg-success">Completed</span>
+        {% else %}
+          <span class="badge bg-warning text-dark">Pending</span>
+        {% endif %}
+      </td>
+      <td>{{ todo.created_at|date:"Y-m-d H:i" }}</td>
+      <td>
+        <a href="{% url 'todo-update' todo.pk %}" class="btn btn-sm btn-info">Edit</a>
+        <a href="{% url 'todo-delete' todo.pk %}" class="btn btn-sm btn-danger">Delete</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5" class="text-center">No todos found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Pagination Controls -->
+<div class="d-flex justify-content-between mt-3">
+  {% if page_obj.has_previous %}
+    <a class="btn btn-outline-primary" href="?page={{ page_obj.previous_page_number }}">
+      ← Previous
+    </a>
+  {% else %}
+    <span class="btn btn-outline-secondary disabled">← Previous</span>
+  {% endif %}
+
+  <span class="align-self-center">
+    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+  </span>
+
+  {% if page_obj.has_next %}
+    <a class="btn btn-outline-primary" href="?page={{ page_obj.next_page_number }}">
+      Next →
+    </a>
+  {% else %}
+    <span class="btn btn-outline-secondary disabled">Next →</span>
+  {% endif %}
+</div>
+{% endblock %}

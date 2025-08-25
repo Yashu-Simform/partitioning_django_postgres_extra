@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ view.object|default:"New Todo" }}</h2>
+
+<form method="post" class="card p-4 shadow-sm">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-success">Save</button>
+  <a href="{% url 'todo-list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

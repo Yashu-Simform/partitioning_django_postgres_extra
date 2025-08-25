@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card p-4 shadow-sm">
+  <h3>{{ todo.title }}</h3>
+  <p>{{ todo.description|default:"No description provided." }}</p>
+
+  <p>
+    <strong>Status:</strong>
+    {% if todo.is_completed %}
+      <span class="badge bg-success">Completed</span>
+    {% else %}
+      <span class="badge bg-warning text-dark">Pending</span>
+    {% endif %}
+  </p>
+
+  <p><strong>Created At:</strong> {{ todo.created_at|date:"Y-m-d H:i" }}</p>
+
+  <a href="{% url 'todo-update' todo.pk %}" class="btn btn-info">Edit</a>
+  <a href="{% url 'todo-delete' todo.pk %}" class="btn btn-danger">Delete</a>
+  <a href="{% url 'todo-list' %}" class="btn btn-secondary">Back</a>
+</div>
+{% endblock %}
